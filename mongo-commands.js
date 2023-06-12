@@ -162,6 +162,25 @@ db.orders.aggregate([
 //Task
 
 //1. Update the language field for all document
+
+db.books.updateMany({}, { $set: {language: "English"}})
+
 //2. update rating for "The Secret" from 8.8 to 9
-//3. update the name from  "Charlotte's web  Charlotte's" to "The Charlotte's web"
+
+db.books.updateOne({ name: "The Secret"}, { $set: {rating: 9}})
+
+db.books.findOne({name:"The Secret"})
+
+//3. update the name from  "Charlotte's" to "The Charlotte's web"
+
+db.books.find({name:"Charlotte's"}).pretty()
+
+db.books.updateOne({ name: "Charlotte's"}, { $set: {name: "The Charlotte's web"}})
+
+db.books.find({name:"The Charlotte's web"}).pretty()
+
 //4. Delete all books with rating < 7
+
+db.books.find({rating : {$lte: 7}}).pretty()
+
+db.books.deleteMany({rating : {$lte: 7}})

@@ -29,7 +29,7 @@ function Callme() {
   console.log(`Say Hi to ${name}`);
 }
 
-setTimepout(greet, 2000);
+setTimeout(greet, 2000);
 Callme("Peter");
 //Say Hi to Peter
 //hello
