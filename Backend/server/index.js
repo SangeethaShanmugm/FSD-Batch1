@@ -1,4 +1,7 @@
-const express = require("express"); // 3rd party package
+// const express = require("express"); // 3rd party package
+// const { MongoClient } = require("mongodb");
+import express from "express";
+import { MongoClient } from "mongodb";
 const app = express();
 const PORT = 8000;
 //req -> what we send to server
@@ -90,23 +93,65 @@ const books = [
   },
 ];
 
+const MONGO_URL = "mongodb://0.0.0.0:27017";
+
+//mongodb://localhost
+//mongodb://localhost:27017
+//mongodb://0.0.0.0:27017
+
+//Mongodb Connection
+async function createConnection() {
+  const client = new MongoClient(MONGO_URL);
+  await client.connect();
+  console.log("MongoDB connected");
+  return client;
+}
+const client = await createConnection();
 //REST API endpoints
 app.get("/", (req, res) => {
   res.send("Hello Everyone🥳🥳🥳");
 });
 
+//Task
+// /books -> all books ✅
+// /books?language=English - only English books ✅
+// /books?language=English&rating=8 - filter by language and rating
+// /books?rating=8 - filter by rating
+
 //get all books
 app.get("/books", (req, res) => {
-  const { language } = req.query;
+  const { language, rating } = req.query;
   console.log(req.query, language);
-  res.send(books.filter((bk) => bk.language == language));
+  let filteredBooks = books; //Copy by reference
+  if (language) {
+    filteredBooks = filteredBooks.filter((bk) => bk.language == language);
+  }
+  if (rating) {
+    filteredBooks = filteredBooks.filter((bk) => bk.rating == rating);
+  }
+  res.send(filteredBooks);
 });
 
-app.get("/books/:id", (req, res) => {
+//get books by id
+app.get("/books/:id", async (req, res) => {
   const { id } = req.params;
   // console.log(id);
   // console.log(req.params);
-  const book = books.find((bk) => bk.id == id);
+  //const book = books.find((bk) => bk.id == id);
+  const book = await client.db("fsd-1").collection("books").findOne({ id: id });
+  res.send(book);
+});
+
+//delete books by id
+app.delete("/books/:id", async (req, res) => {
+  const { id } = req.params;
+  // console.log(id);
+  // console.log(req.params);
+  //const book = books.find((bk) => bk.id == id);
+  const book = await client
+    .db("fsd-1")
+    .collection("books")
+    .deleteOne({ id: id });
   res.send(book);
 });
 
