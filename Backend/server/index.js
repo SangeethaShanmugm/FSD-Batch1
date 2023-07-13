@@ -94,4 +94,22 @@ app.post("/books", async (req, res) => {
   res.send(result);
 });
 
+//update book
+app.put("/books/:id", async (req, res) => {
+  const { id } = req.params;
+  const updatedBook = req.body;
+  console.log(updatedBook);
+  const result = await client
+    .db("fsd-1")
+    .collection("books")
+    .updateOne({ id: id }, { $set: updatedBook });
+  res.send(result);
+});
+
 app.listen(PORT, () => console.log("Server started on the port", PORT));
+
+//CRUD
+// C  - Create - add/insert - insertOne/insertMany
+// R - Read - get - find, findOne
+// U - Update - updateOne,  updateMany
+// D - Delete - deleteOne, deleteMany
